@@ -28,6 +28,10 @@ app.config["DEBUG"] = True
 
 ''''DEPARTURE'''
 global passDb, bagDb
+@app.route('/')
+def homepage():
+	return render_template('index.html')
+
 @app.route('/dept/gen/pid' , methods =['GET'])
 def genUid():
 	uid = uuid.uuid1()
@@ -44,7 +48,8 @@ def genBagid():
 	# render_template('.html', bagID = bagRfid)  		# passing bag rfid to html
 	return bagRfid
 
-@app.route('/dept/post/bagwt', methods = ["POST"])
+#@app.route('/dept/post/bagwt', methods = ["POST"])
+@app.route('/', methods = ["POST"])
 def postBagWT():
 	wt = request.form['weight']						#HTML input name="weight"
 	cur.execute(Query.addpassbags.format(passDb, bagDb, wt))				#uploads passenger to databse
