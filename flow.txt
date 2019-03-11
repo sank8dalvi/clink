@@ -1,0 +1,18 @@
+
+------DEPARTURE-----
+check in passenger -- page with a button
+	getpid to be called
+		write pid to rfid card
+	
+add bags
+	getbid to get bag ids
+		post bagwt,pdb,bdb back to server
+		submit button
+	bags added -- goes back to check in passenger
+
+flight
+
+
+------ARRIVAL-------
+passenger rfid, bag rfid
+	reuturn boolean
