@@ -1,9 +1,9 @@
 import flask
 from flask import request, jsonify, render_template
-from case.DB.dbcon import clinkConnect
-from case.DB.dbcon import clinkClose
+from case.model.dbconfig import clinkConnect
+from case.model.dbconfig import clinkClose
 import uuid
-from case.DB.query import Query
+from case.model.query import Query
 import hashlib
 import base64
 
@@ -47,13 +47,14 @@ def genBagid():
 	# render_template('.html', bagID = bagRfid)  		# passing bag rfid to html
 	return jsonify({'bagRfid' : bagRfid , 'passDb' : bagDb})
 
-# @app.route('/dept/post/bagwt', methods = ["POST"])
-@app.route('/', methods = ["POST"])
+@app.route('/dept/post/bagwt', methods = ["POST"])
+#@app.route('/', methods = ["POST"])
 def postBagWT():
 	wt = request.form['weight']						#HTML input name="weight"
 	#pdb = request.p['pdb']
 	#bdb = request.p['bdb']
 	#cur.execute(Query.addpassbags.format(pdb, bdb, wt))				#uploads passenger to databse
+	cur.execute(Query.addpassbags.format("23","32",int(wt)))
 	#return render_template('.html', wt= wt)
 
 ''''ARRIVAL'''
