@@ -73,7 +73,7 @@ def match(passID,bagID):
 def popTab():
 	cur.execute(Query.gettable)
 	data = cur.fetchall()
-	#return render_template('.html', data = data)			#add passenger details html
+	return render_template('tags.html', data = data)			#add passenger details html
 
 ''''CLOSE'''
 @app.route('/close')
