@@ -5,8 +5,7 @@ from case.DB.dbcon import clinkClose
 import uuid
 from case.DB.query import Query
 import hashlib
-
-
+import base64
 
 db = {
 	'user' : 'root',
@@ -25,12 +24,12 @@ except:
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
-
-''''DEPARTURE'''
-global passDb, bagDb
 @app.route('/')
 def homepage():
 	return render_template('index.html')
+
+
+''''DEPARTURE'''
 
 @app.route('/dept/gen/pid' , methods =['GET'])
 def genUid():
@@ -38,7 +37,7 @@ def genUid():
 	passDb = str(uuid.uuid3(uid,"caseLink").hex)
 	passRfid = passDb								#requires hashing
 	# render_template('.html' , passId = passRfid )	#passing passenger rfid to html
-	return passRfid
+	return jsonify({'passRfid' : passRfid , 'passDb' : passDb})
 
 @app.route('/dept/gen/bid' , methods =['GET'])
 def genBagid():
@@ -46,13 +45,15 @@ def genBagid():
 	bagDb = str(uuid.uuid3(uid, "caseLink").hex)
 	bagRfid = bagDb  								# requires hashing
 	# render_template('.html', bagID = bagRfid)  		# passing bag rfid to html
-	return bagRfid
+	return jsonify({'bagRfid' : bagRfid , 'passDb' : bagDb})
 
-#@app.route('/dept/post/bagwt', methods = ["POST"])
+# @app.route('/dept/post/bagwt', methods = ["POST"])
 @app.route('/', methods = ["POST"])
 def postBagWT():
 	wt = request.form['weight']						#HTML input name="weight"
-	cur.execute(Query.addpassbags.format(passDb, bagDb, wt))				#uploads passenger to databse
+	#pdb = request.p['pdb']
+	#bdb = request.p['bdb']
+	#cur.execute(Query.addpassbags.format(pdb, bdb, wt))				#uploads passenger to databse
 	#return render_template('.html', wt= wt)
 
 ''''ARRIVAL'''
