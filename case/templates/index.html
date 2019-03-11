@@ -12,18 +12,9 @@
     <title>Clink</title>
 </head>
 <body>
+{% block body %}
 
-<div class="container">
-    <form class="form-inline" method="post" action="/dept/post/bagwt">
-  <div class="form-group mb-2">
-    <input type="text" readonly class="form-control-plaintext" value="Enter the weight">
-  </div>
-  <div class="form-group mx-sm-3 mb-2">
-    <input type="text" name="weight" class="form-control" id="inputPassword2" placeholder="Weight of the bag">
-  </div>
-  <button type="submit" class="btn btn- mb-2">Submit</button>
-</form>
-</div>
+{% endblock %}
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
