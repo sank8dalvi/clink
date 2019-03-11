@@ -1,11 +1,12 @@
 import flask
 from flask import request, jsonify, render_template
-from case.DB.dbcon import Connect
+from case.DB.dbcon import clinkConnect
+from case.DB.dbcon import clinkClose
 import uuid
 from case.DB.query import Query
 import hashlib
 
-global con
+
 
 db = {
 	'user' : 'root',
@@ -15,11 +16,11 @@ db = {
 }
 
 try:
-	con = Connect.clinkConnect(**db)
+	con = clinkConnect(db)
 	cur = con.cursor()
 	print("Connected")
 except:
-	print("")
+	print("Not Connected")
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -47,6 +48,7 @@ def genBagid():
 def postBagWT():
 	wt = request.form['weight']						#HTML input name="weight"
 	cur.execute(Query.addpassbags.format(passDb, bagDb, wt))				#uploads passenger to databse
+	#return render_template('.html', wt= wt)
 
 ''''ARRIVAL'''
 @app.route('/arr/match', methods = ["POST"])
@@ -64,7 +66,11 @@ def match(passID,bagID):
 def popTab():
 	cur.execute(Query.gettable)
 	data = cur.fetchall()
-	# render_template('.html', data = data)			#add passenger details html
+	#return render_template('.html', data = data)			#add passenger details html
 
-
+''''CLOSE'''
+@app.route('/close')
+def conClose():
+	clinkClose(con)
+	return("Closing")
 app.run()
