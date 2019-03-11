@@ -34,16 +34,18 @@ def homepage():
 @app.route('/dept/gen/pid' , methods =['GET'])
 def genUid():
 	uid = uuid.uuid1()
-	passDb = str(uuid.uuid3(uid,"caseLink").hex)
-	passRfid = passDb								#requires hashing
+	passRfid = uuid.uuid3(uid,"caseLink")
+	passDb = str(uuid.uuid5(passRfid,"caseLink").hex)
+	passRfid = str(passRfid.hex)
 	# render_template('.html' , passId = passRfid )	#passing passenger rfid to html
 	return jsonify({'passRfid' : passRfid , 'passDb' : passDb})
 
 @app.route('/dept/gen/bid' , methods =['GET'])
 def genBagid():
 	uid = uuid.uuid1()
-	bagDb = str(uuid.uuid3(uid, "caseLink").hex)
-	bagRfid = bagDb  								# requires hashing
+	bagRfid = uuid.uuid3(uid, "caseLink")
+	bagDb = str(uuid.uuid5(bagRfid,"caseLink").hex)
+	bagRfid = str(bagRfid.hex)
 	# render_template('.html', bagID = bagRfid)  		# passing bag rfid to html
 	return jsonify({'bagRfid' : bagRfid , 'passDb' : bagDb})
 
@@ -60,7 +62,9 @@ def postBagWT():
 ''''ARRIVAL'''
 @app.route('/arr/match', methods = ["POST"])
 def match(passID,bagID):
-	cur.execute(Query.matchtag.format(passID,bagID))		#update after Hashing added
+	bagID = str(uuid.uuid5(uuid.UUID(bagID), "caseLink").hex)
+	passID = str(uuid.uuid5(uuid.UUID(passID), "caseLink").hex)
+	cur.execute(Query.matchtag.format(passID,bagID))
 	if cur.rowcount == 0 :
 		return False
 	else:
@@ -69,11 +73,17 @@ def match(passID,bagID):
 		return True
 
 ''''Table'''
-@app.route('/populateTable')
-def popTab():
+@app.route('/popBagTable')										#All bags from db
+def popBagTab():
 	cur.execute(Query.gettable)
 	data = cur.fetchall()
-	return render_template('tags.html', data = data)			#add passenger details html
+	return render_template('tags.html', data = data)			#add bag details html
+
+@app.route('/popPassTable')										#Current passenger bags + on add bags page
+def popPassTab():
+	cur.execute(Query.getbags)
+	bags = cur.fetchall()
+	#return render_template('.html', bags = bags)			#add passenger details html
 
 ''''CLOSE'''
 @app.route('/close')
