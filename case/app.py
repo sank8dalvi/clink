@@ -30,7 +30,6 @@ def homepage():
 
 
 ''''DEPARTURE'''
-
 @app.route('/dept/gen/pid' , methods =['GET'])
 def genUid():
 	uid = uuid.uuid1()
@@ -61,7 +60,9 @@ def postBagWT():
 
 ''''ARRIVAL'''
 @app.route('/arr/match', methods = ["POST"])
-def match(passID,bagID):
+def match():
+	bagID = request.args.get('bagID','')
+	passID = request.args.get('passID', '')
 	bagID = str(uuid.uuid5(uuid.UUID(bagID), "caseLink").hex)
 	passID = str(uuid.uuid5(uuid.UUID(passID), "caseLink").hex)
 	cur.execute(Query.matchtag.format(passID,bagID))
