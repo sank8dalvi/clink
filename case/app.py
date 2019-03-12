@@ -28,16 +28,12 @@ def getBagCount():
 	cur.execute(Query.getBagCount)
 	return (cur.fetchall()[0][0])
 
-getPassCount()
-getBagCount()
-
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
 @app.route('/')
 def homepage():
 	return render_template('index.html',bagCount = getBagCount(), passCount = getPassCount())
-
 
 ''''DEPARTURE'''
 @app.route('/dept/gen/pid' , methods =['GET'])
@@ -46,8 +42,16 @@ def genUid():
 	passRfid = uuid.uuid3(uid,"caseLink")
 	passDb = str(uuid.uuid5(passRfid,"caseLink").hex)
 	passRfid = str(passRfid.hex)
-	# render_template('.html' , passId = passRfid, bagCount = getBagCount(), passCount = getPassCount)	#passing passenger rfid to html
 	return jsonify({'passRfid' : passRfid , 'passDb' : passDb})
+
+@app.route('/dept/gen/idwrite')						#write Rfid Page
+def callWriteRead():
+	return render_template('write-read.html', status="Please Scan Tag", bagCount=getBagCount(), passCount=getPassCount())
+
+@app.route('/dept/gen/idread')							#read Rfid Page	add delay should try to use JS and modify status directly
+def pidWritten():
+	return render_template('write-read.html', status="Tag Scanned Successfully",
+						   bagCount=getBagCount(),passCount=getPassCount())
 
 @app.route('/dept/gen/bid' , methods =['GET'])
 def genBagid():
@@ -59,14 +63,14 @@ def genBagid():
 	return jsonify({'bagRfid' : bagRfid , 'passDb' : bagDb})
 
 @app.route('/dept/post/bagwt', methods = ["POST"])
-#@app.route('/', methods = ["POST"])
 def postBagWT():
 	wt = request.form['weight']						#HTML input name="weight"
-	#pdb = request.p['pdb']
-	#bdb = request.p['bdb']
+	#pdb = request.args.get('pdb','')
+	#bdb = request.args.get('bdb','')
 	#cur.execute(Query.addpassbags.format(pdb, bdb, wt))				#uploads passenger to databse
 	cur.execute(Query.addpassbags.format("23","32",int(wt)))
 	#return render_template('.html', wt= wt, bagCount = getBagCount(), passCount = getPassCount)
+
 
 ''''ARRIVAL'''
 @app.route('/arr/match', methods = ["POST"])
@@ -83,20 +87,23 @@ def match():
 		cur.execute(Query.UpColl.format(passID, bagID))
 		return True
 
+
 ''''Table'''
 @app.route('/popBagTable')										#All bags from db
 def popBagTab():
-	cur.execute(Query.gettable)
+	passID = request.args.get('passID', '')
+	cur.execute(Query.gettable.format(passID))
 	data = cur.fetchall()
 	return render_template('tags.html', data = data, bagCount = getBagCount(), passCount = getPassCount())			#add bag details html
 
-@app.route('/popPassTable')										#Current passenger bags + on add bags page
-def popPassTab():
-	cur.execute(Query.getbags)
+@app.route('/AddBags')										#Current passenger bags + on add bags page
+def popAddBagTab():
+	cur.execute(Query.getbags.format())
 	bags = cur.fetchall()
-	#return render_template('.html', bags = bags, bagCount = getBagCount(), passCount = getPassCount())			#add passenger details html
+	return render_template('addBags.html', data = bags, bagCount = getBagCount(), passCount = getPassCount())			#add passenger details html
 
-''''CLOSE'''
+
+''''CLOSE CONN'''
 @app.route('/close')
 def conClose():
 	clinkClose(con)
