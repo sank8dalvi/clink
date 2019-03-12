@@ -5,3 +5,5 @@ class Query:
 	gettable = "SELECT `passID`,`bagID`,`bagWT` FROM `tagdata`"
 	UpColl = "INSERT INTO `collected`(`uid`, `passID`, `bagID`, `bagWT`) VALUES ({},{},{})"
 	getbags = "SELECT * FROM `tagdata` WHERE `passID` = {}"
+	getPassCount = "SELECT COUNT(DISTINCT `passID`) FROM `tagdata`"
+	getBagCount = "SELECT COUNT(`bagID`) FROM `tagdata`"
