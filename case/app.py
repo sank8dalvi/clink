@@ -85,12 +85,17 @@ def match():
 	bagID = str(uuid.uuid5(uuid.UUID(bagID), "caseLink").hex)
 	passID = str(uuid.uuid5(uuid.UUID(passID), "caseLink").hex)
 	cur.execute(Query.matchtag.format(passID,bagID))
+
+	resp = {}
 	if cur.rowcount == 0 :
-		return False
+		resp['status'] = False
 	else:
 		cur.execute(Query.delTag.format(passID, bagID))
 		cur.execute(Query.UpColl.format(passID, bagID))
-		return True
+		resp['status'] = True
+
+	return jsonify(resp)
+
 
 
 ''''Table'''
