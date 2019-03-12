@@ -12,15 +12,15 @@
   <title>SB Admin - Dashboard</title>
 
   <!-- Custom fonts for this template-->
-  <link href="{{url_for('static/vendor/fontawesome-free/css', filename='all.min.css')}}" rel="stylesheet" type="text/css">
+  <link href="{{url_for('static', filename='vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
 
   <!-- Page level plugin CSS-->
-  <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <link href="{{url_for('static',filename='vendor/datatables/dataTables.bootstrap4.css')}}" rel="stylesheet">
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
   <!-- Custom styles for this template-->
-  <link href="css/sb-admin.css" rel="stylesheet">
+  <link href="{{url_for('static', filename='css/sb-admin.css')}}" rel="stylesheet">
 
 </head>
 
@@ -755,19 +755,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 
   <!-- Core plugin JavaScript-->
-  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="{{url_for('static',filename='vendor/jquery-easing/jquery.easing.min.js')}}"></script>
 
   <!-- Page level plugin JavaScript-->
-  <script src="vendor/chart.js/Chart.min.js"></script>
-  <script src="vendor/datatables/jquery.dataTables.js"></script>
-  <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+  <script src="{{url_for('static',filename='vendor/chart.js/Chart.min.js')}}"></script>
+  <script src="{{url_for('static',filename='vendor/datatables/jquery.dataTables.js')}}"></script>
+  <script src="{{url_for('static',filename='vendor/datatables/dataTables.bootstrap4.js')}}"></script>
 
   <!-- Custom scripts for all pages-->
-  <script src="js/sb-admin.min.js"></script>
+  <script src="{{url_for('static',filename='js/sb-admin.min.js')}}"></script>
 
   <!-- Demo scripts for this page-->
-  <script src="js/demo/datatables-demo.js"></script>
-  <script src="js/demo/chart-area-demo.js"></script>
+  <script src="{{url_for('static',filename='js/demo/datatables-demo.js')}}"></script>
+  <script src="{{url_for('static',filename='js/demo/chart-area-demo.js')}}"></script>
 
 </body>
 
