@@ -81,16 +81,15 @@ def gen_bag_id():
 	return jsonify({'bagRfid': bagRfid, 'passDb': bagDb})
 
 
-'''@todo check how values are passing. API needs passenger and Bag db IDs'''
+''' todo check how values are passing. API needs passenger and Bag db IDs'''
 
 
 @app.route('/dept/post/bagwt', methods=["POST"])
 def post_bag_wt():
 	wt = request.form['weight']
-	pdb = request.form['pdb']
-	bdb = request.form['bdb']
-
-	print(Query.addpassbags.format(pdb, bdb, int(wt)))
+	pdb = str(request.cookies.get('passId'))
+	bdb = str(request.cookies.get('bagId'))
+	#print(Query.addpassbags.format(pdb, bdb, int(wt)))
 	cur.execute(Query.addpassbags.format(pdb, bdb, int(wt)))
 	con.commit()
 	return '1'
@@ -146,6 +145,7 @@ def pop_add_bag_tab():
 	# passID = request.args.get('passID','')				#piInput
 	cur.execute(Query.getbags.format("12324"))
 	bags = cur.fetchall()
+
 	return render_template('addBags.html',
 						   data=bags,
 						   bagCount=get_bag_count(),
