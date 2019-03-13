@@ -4,7 +4,7 @@ from flask import request, jsonify, render_template
 import RPi.GPIO as GPIO
 import time
 import requests
-from pi_files import SimpleMFRC522
+import SimpleMFRC522
 from flask_cors import CORS
 
 app = flask.Flask(__name__)
@@ -68,18 +68,22 @@ def start_scan():
 
 	while True:
 		# lcd out scan boarding pass
-		# time.sleep(2)
+		print("Scan pass")
 		id1, pass_id = reader.read()
+		print("Read pass", pass_id)
 
-		# time.sleep(2)
+		time.sleep(2)
 		# lcd out scan bag
+		print("Scan bag")
 		id2, bag_id = reader.read()
+		print("Read bag", bag_id)
 
 		data = {'bagID': bag_id.strip(), 'passID': pass_id.strip()}
-
-		resp = requests.post('http://127.0.0.1:5000/match', data=data)
-
+		print(data)
+		resp = requests.post('http://192.168.0.14:5000/arr/match', data=data)
+		# print(resp.text)
 		status = resp.json()
+		print(status)
 		if status['status']:
 			# lcd out 'you may pass'
 			pass
@@ -89,4 +93,5 @@ def start_scan():
 		time.sleep(5)
 
 
-app.run(port=4020)
+app.run(host='192.168.0.17', port=4020)
+
