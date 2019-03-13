@@ -4,6 +4,7 @@ from case.model.dbconfig import clinkConnect
 from case.model.dbconfig import clinkClose
 import uuid
 from case.model.query import Query
+from flask_cors import CORS
 
 db = {
 	'user' : 'root',
@@ -32,7 +33,7 @@ def getBagCount():
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
-
+CORS(app)
 
 @app.route('/')
 def homepage():
@@ -71,28 +72,37 @@ def genBagid():
 @app.route('/dept/post/bagwt', methods = ["POST"])
 def postBagWT():
 	wt = request.form['weight']									#HTML input name="weight"
-	#pdb = request.args.get('pdb','')							#piInput
+	pdb = request.form['pdb']							#piInput
+	bdb = request.form['bdb']							#piInput
 	#bdb = request.args.get('bdb','')							#piInput
 	#cur.execute(Query.addpassbags.format(pdb, bdb, wt))				#uploads passenger to databse
-	cur.execute(Query.addpassbags.format("23","32",int(wt)))
+	print(Query.addpassbags.format(pdb, bdb, int(wt)))
+	cur.execute(Query.addpassbags.format(pdb, bdb, int(wt)))
+	con.commit()
+	return '1'
 	#return render_template('.html', bagCount = getBagCount(), passCount = getPassCount)
 
 
 ''''ARRIVAL'''
 @app.route('/arr/match', methods = ["POST"])
 def match():
-	bagID = request.args.get('bagID','')						#piInput
-	passID = request.args.get('passID', '')					#piInput
+	bagID = request.form['bagID']						#piInput
+	passID = request.form['passID']					#piInput
+	print(bagID, passID)
 	bagID = str(uuid.uuid5(uuid.UUID(bagID), "caseLink").hex)
 	passID = str(uuid.uuid5(uuid.UUID(passID), "caseLink").hex)
-	cur.execute(Query.matchtag.format(passID,bagID))
-
+	print(bagID, passID)
+	cur.execute(Query.matchtag.format(passID, bagID))
+	data = cur.fetchall()
 	resp = {}
-	if cur.rowcount == 0 :
+	if len(data) == 0:
 		resp['status'] = False
 	else:
+		# todo row count
+		print(data)
 		cur.execute(Query.delTag.format(passID, bagID))
-		cur.execute(Query.UpColl.format(passID, bagID))
+		cur.execute(Query.UpColl.format(passID, bagID, data[0][3]))
+		con.commit()
 		resp['status'] = True
 
 	return jsonify(resp)
@@ -122,4 +132,6 @@ def popAddBagTab():
 def conClose():
 	clinkClose(con)
 	return("Closing")
-app.run()
+
+
+app.run(host='192.168.0.14')
