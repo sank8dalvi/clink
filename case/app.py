@@ -66,6 +66,7 @@ def call_write_read():
 	resp.set_cookie("passDb",  tempId['passDb'])
 	resp.set_cookie("passRfid", tempId['passRfid'])
 
+
 	return resp
 
 
