@@ -62,6 +62,7 @@ def call_write_read():
 						   bagCount=get_bag_count(), passCount=get_pass_count()))
 
 	tempId = gen_uid().json
+	print(tempId)
 	resp.set_cookie("passDb",  tempId['passDb'])
 	resp.set_cookie("passRfid", tempId['passRfid'])
 
@@ -150,9 +151,9 @@ def pop_bag_tab():
 @app.route('/AddBags')  # Current passenger bags + on add bags page
 def pop_add_bag_tab():
 	# passID = request.args.get('passID','')				#piInput
-	cur.execute(Query.getbags.format("12324"))
+	cur.execute(Query.getbags.format(request.cookies.get('passDb')))
 	bags = cur.fetchall()
-
+	print(request.cookies.get('passDb'))
 	return render_template('addBags.html',
 						   data=bags,
 						   bagCount=get_bag_count(),
