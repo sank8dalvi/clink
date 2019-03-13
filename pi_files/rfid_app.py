@@ -6,6 +6,8 @@ import time
 import requests
 import SimpleMFRC522
 from flask_cors import CORS
+import importlib
+
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -13,7 +15,16 @@ CORS(app)
 
 op = [35, 37]
 
-reader = SimpleMFRC522.SimpleMFRC522()
+lcd_rs = 5
+lcd_en = 6
+lcd_d4 = 26
+lcd_d5 = 20
+lcd_d6 = 21
+lcd_d7 = 16
+lcd_backlight = 2
+lcd_columns = 16
+lcd_rows = 2
+
 
 
 @app.route('/writeRfid', methods=['POST'])
@@ -29,9 +40,9 @@ def write_rfid():
 	tag = request.form['id']  # tag to be written
 	resp = {'success': -1}
 	count = 0
-	GPIO.setmode(GPIO.BOARD)
-	GPIO.setup(op, GPIO.OUT)
-	GPIO.output(op, (GPIO.HIGH, GPIO.LOW))
+
+	GPIO.cleanup()
+	reader = SimpleMFRC522.SimpleMFRC522()
 
 	# this loop isn't perfect
 	while True:
@@ -46,15 +57,26 @@ def write_rfid():
 			if data.strip() == tag and id1 == id2:
 				resp['success'] = 0
 				resp['id'] = id2
-				GPIO.output(op, (GPIO.LOW, GPIO.HIGH))
-				time.sleep(2)
-				GPIO.output(op, (GPIO.LOW, GPIO.LOW))
+				time.sleep(2)		
 				break
 			else:
 				print('failed')
 		except Exception as e:
 			count += 1
+	GPIO.cleanup()
+	
 	return jsonify(resp)
+
+
+def printLCD(text):
+        GPIO.cleanup()
+        GPIO.setmode(GPIO.BCM)
+        import Adafruit_CharLCD as LCD
+        lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
+
+        lcd.message(text)
+        time.sleep(1)
+        GPIO.cleanup()
 
 
 @app.route('/startScan')
@@ -65,31 +87,36 @@ def start_scan():
 	calls /match on server to compare bag and passenger id
 	and prints result on lcd
 	"""
-
+        GPIO.cleanup()
 	while True:
 		# lcd out scan boarding pass
 		print("Scan pass")
+		printLCD("Scan pass")
+		reader = SimpleMFRC522.SimpleMFRC522()
 		id1, pass_id = reader.read()
+		
 		print("Read pass", pass_id)
 
 		time.sleep(2)
 		# lcd out scan bag
+		printLCD("Scan bag")
 		print("Scan bag")
+		reader = SimpleMFRC522.SimpleMFRC522()
 		id2, bag_id = reader.read()
 		print("Read bag", bag_id)
 
 		data = {'bagID': bag_id.strip(), 'passID': pass_id.strip()}
 		print(data)
-		resp = requests.post('http://192.168.0.14:5000/arr/match', data=data)
+		resp = requests.post('http://192.168.1.35:5000/arr/match', data=data)
 		# print(resp.text)
 		status = resp.json()
 		print(status)
 		if status['status']:
 			# lcd out 'you may pass'
-			pass
+			printLCD('you may pass')
 		else:
 			# gandalf screams "YOU SHALL NOT PASS"
-			pass
+			printLCD("YOU SHALL\nNOT PASS")
 		time.sleep(5)
 
 
