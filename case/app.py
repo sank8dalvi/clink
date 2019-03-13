@@ -85,7 +85,7 @@ def gen_bag_id():
 	bagDb = str(uuid.uuid5(bagRfid, "caseLink").hex)
 	bagRfid = str(bagRfid.hex)
 	# render_template('.html', bagID = bagRfid, bagCount = getBagCount(), passCount = getPassCount)
-	return jsonify({'bagRfid': bagRfid, 'passDb': bagDb})
+	return jsonify({'bagRfid': bagRfid, 'bagDb': bagDb})
 
 
 ''' todo check how values are passing. API needs passenger and Bag db IDs'''
@@ -94,8 +94,8 @@ def gen_bag_id():
 @app.route('/dept/post/bagwt', methods=["POST"])
 def post_bag_wt():
 	wt = request.form['weight']
-	pdb = str(request.cookies.get('passId'))
-	bdb = str(request.cookies.get('bagId'))
+	pdb = request.form['pdb']
+	bdb = request.form['bdb']
 	#print(Query.addpassbags.format(pdb, bdb, int(wt)))
 	cur.execute(Query.addpassbags.format(pdb, bdb, int(wt)))
 	con.commit()

@@ -40,16 +40,92 @@
     <div class="card-footer small text-muted">@caselink</div>
 </div>
 </div>
-<form method="post" action="/dept/post/bagwt">
+<!--<form method="post" action="/dept/post/bagwt">-->
+
+<script>
+
+function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+        }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+var writeRfid2 = function (id, bdb, wt) {
+    var form = new FormData();
+    form.append("id", id); //cookie
+    document.getElementById('status').innerHTML = 'Scan Rfid now';
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "http://192.168.0.17:4020/writeRfid",
+        "method": "POST",
+        "headers": {
+            "cache-control": "no-cache",
+            "Postman-Token": "b06b5cdb-ae1a-43f5-abe3-85e9efee0981"
+        },
+        "processData": false,
+        "contentType": false,
+        "mimeType": "multipart/form-data",
+        "data": form
+    }
+
+    $.ajax(settings).done(function(response) {
+        console.log(response);
+        console.log({pdb: getCookie('passDb'), bdb: bdb, weight: wt});
+
+        post('/dept/post/bagwt', {pdb: getCookie('passDb'), bdb: bdb, weight: wt})
+
+    });
+}
+
+    var gen_bagid = function(weight){
+        var settings = {
+          "async": true,
+          "crossDomain": true,
+          "url": "http://192.168.0.14:5000/dept/gen/bid",
+          "method": "GET",
+          "headers": {
+            "cache-control": "no-cache",
+            "Postman-Token": "1bc23c2c-4086-48ca-8da6-e5e595472133"
+          }
+        }
+
+        $.ajax(settings).done(function (response) {
+          console.log(response);
+          console.log(weight);
+              writeRfid2(response['bagRfid'], response['bagDb'], weight);
+        });
+    }
+</script>
+<!--<form onsubmit="return gen_bagid(this);">-->
     <div class="input-group mb-3" style="width:350px; margin: 0px 30px;float:left;left:70px">
-  <input style="height:50px" type="text" class="form-control" name="weight" placeholder="Enter the weight of the Bag" aria-label="Bag Weight" aria-describedby="basic-addon2">
+  <input style="height:50px" type="text" class="form-control" name="weight" id='weight_bag' placeholder="Enter the weight of the Bag" aria-label="Bag Weight" aria-describedby="basic-addon2">
   <div class="input-group-append">
-    <button class="btn btn-primary btn-lg" type="submit">Add Bag</button>
+    <button class="btn btn-primary btn-lg" type="submit" onclick="javascript: gen_bagid(document.getElementById('weight_bag').value)">Add Bag</button>
+       <p id="status"></p>
   </div>
 </div>
-</form>
+<!--</form>-->
 <form action="/">
         <button style="float:center;position:fixed;bottom:250px;right:85px;height:50px" type="submit" class="btn m-3 btn-success btn-lg">Submit</button>
+
 </form>
 
 {% endblock %}
