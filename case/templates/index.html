@@ -125,7 +125,8 @@
       {% endblock %}
 
 
-
+      <p id="passId">
+      </p>
       <!-- Sticky Footer -->
       <footer class="sticky-footer">
         <div class="container my-auto">
@@ -154,6 +155,9 @@
   <!-- Core plugin JavaScript-->
   <script src="{{url_for('static',filename='vendor/jquery-easing/jquery.easing.min.js')}}"></script>
 
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
   <!-- Page level plugin JavaScript-->
   <script src="{{url_for('static',filename='vendor/datatables/jquery.dataTables.js')}}"></script>
   <script src="{{url_for('static',filename='vendor/datatables/dataTables.bootstrap4.js')}}"></script>
@@ -167,17 +171,26 @@
 
   <!-- COMMS JS -->
   <script>
-    // for get only
-    function get_communicate(url){
-      $.ajax({
-        url: url,
-        type: "GET",
-        success: function (msg){
-          console.log(msg)
-        }
-      });
 
-    }
+
+    // for get only
+     function get_communicate(){
+     var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "http://127.0.0.1:5000/dept/gen/pid",
+  "method": "GET",
+  "headers": {
+    "cache-control": "no-cache",
+    "Postman-Token": "b6fc21b3-c965-4b4c-906f-280016108b17"
+  }
+}
+
+$.ajax(settings).done(function (response) {
+  console.log(response);
+    document.getElementById('passId').innerHTML=response.passDb;
+});
+}
 
     // for post only
     function post_communicate(url, data){
@@ -194,6 +207,30 @@
         }
       });
 
+    }
+        function writeRfid(id){
+        var form = new FormData();
+        form.append("id", id);//cookie
+
+        var settings = {
+          "async": true,
+          "crossDomain": true,
+          "url": "http://192.168.0.17:4020/writeRfid",
+          "method": "POST",
+          "headers": {
+            "cache-control": "no-cache",
+            "Postman-Token": "b06b5cdb-ae1a-43f5-abe3-85e9efee0981"
+          },
+          "processData": false,
+          "contentType": false,
+          "mimeType": "multipart/form-data",
+          "data": form
+        }
+
+        $.ajax(settings).done(function (response) {
+          console.log(response);
+          window.open('/dept/gen/idread', '_self');
+        });
     }
   </script>
 </body>

@@ -5,6 +5,7 @@ from case.model.dbconfig import clinkClose
 import uuid
 from case.model.query import Query
 from flask_cors import CORS
+import json
 
 db = {
 	'user' : 'root',
@@ -51,14 +52,20 @@ def genUid():
 
 @app.route('/dept/gen/idwrite')						#write Rfid Page
 def callWriteRead():
-	return render_template('write-read.html', status = "Please Scan Tag",
-						   bagCount=getBagCount(), passCount=getPassCount())
+	resp = flask.make_response(render_template('write-read.html', status = "Please Scan Tag",
+						   bagCount=getBagCount(), passCount=getPassCount()))
+
+	tempId = genUid().json
+	resp.set_cookie("passDb" ,  tempId['passDb'])
+	resp.set_cookie("passRfid", tempId['passRfid'])
+
+
+	return resp
 
 @app.route('/dept/gen/idread')							#read Rfid Page	add delay should try to use JS and modify status directly
 def pidWritten():
 	return render_template('write-read.html', status = "Tag Scanned Successfully",
 						   bagCount=getBagCount(),passCount=getPassCount())
-
 @app.route('/dept/gen/bid' , methods =['GET'])
 def genBagid():
 	uid = uuid.uuid1()
@@ -115,6 +122,7 @@ def popBagTab():
 	passID = request.args.get('passID', '')					#piInput
 	cur.execute(Query.gettable.format(passID))
 	data = cur.fetchall()
+	print(resp.set_cookie(request.cookies.get('passDb')))
 	return render_template('tags.html', data = data,
 					bagCount = getBagCount(), passCount = getPassCount())			#add bag details html
 
@@ -134,4 +142,4 @@ def conClose():
 	return("Closing")
 
 
-app.run(host='192.168.0.14')
+app.run(host="0.0.0.0")
