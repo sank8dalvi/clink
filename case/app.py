@@ -19,6 +19,7 @@ try:
 except:
 	print("Not Connected")
 
+
 '''DASHBOARD Data'''
 def getPassCount():
 	cur.execute(Query.getPassCount)
@@ -74,7 +75,7 @@ def postBagWT():
 	#bdb = request.args.get('bdb','')							#piInput
 	#cur.execute(Query.addpassbags.format(pdb, bdb, wt))				#uploads passenger to databse
 	cur.execute(Query.addpassbags.format("23","32",int(wt)))
-	#return render_template('.html', wt= wt, bagCount = getBagCount(), passCount = getPassCount)
+	#return render_template('.html', bagCount = getBagCount(), passCount = getPassCount)
 
 
 ''''ARRIVAL'''
