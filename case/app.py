@@ -43,7 +43,7 @@ def homepage():
 @app.route('/dept/gen/pid' , methods =['GET'])
 def genUid():
 	uid = uuid.uuid1()
-	passRfid = uuid.uuid3(uid,"caseLink")
+	passRfid = uuid.uuid3(uid ,"caseLink")
 	passDb = str(uuid.uuid5(passRfid,"caseLink").hex)
 	passRfid = str(passRfid.hex)
 	return jsonify({'passRfid' : passRfid , 'passDb' : passDb})
