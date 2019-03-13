@@ -66,6 +66,7 @@ def call_write_read():
 	resp.set_cookie("passDb",  tempId['passDb'])
 	resp.set_cookie("passRfid", tempId['passRfid'])
 
+
 	return resp
 
 
@@ -85,7 +86,7 @@ def gen_bag_id():
 	bagDb = str(uuid.uuid5(bagRfid, "caseLink").hex)
 	bagRfid = str(bagRfid.hex)
 	# render_template('.html', bagID = bagRfid, bagCount = getBagCount(), passCount = getPassCount)
-	return jsonify({'bagRfid': bagRfid, 'passDb': bagDb})
+	return jsonify({'bagRfid': bagRfid, 'bagDb': bagDb})
 
 
 ''' todo check how values are passing. API needs passenger and Bag db IDs'''
