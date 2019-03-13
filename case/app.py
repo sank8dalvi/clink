@@ -75,6 +75,7 @@ def postBagWT():
 	#bdb = request.args.get('bdb','')							#piInput
 	#cur.execute(Query.addpassbags.format(pdb, bdb, wt))				#uploads passenger to databse
 	cur.execute(Query.addpassbags.format("23","32",int(wt)))
+	con.commit()
 	#return render_template('.html', bagCount = getBagCount(), passCount = getPassCount)
 
 
@@ -86,13 +87,15 @@ def match():
 	bagID = str(uuid.uuid5(uuid.UUID(bagID), "caseLink").hex)
 	passID = str(uuid.uuid5(uuid.UUID(passID), "caseLink").hex)
 	cur.execute(Query.matchtag.format(passID,bagID))
-
+	con.commit()
 	resp = {}
 	if cur.rowcount == 0 :
 		resp['status'] = False
 	else:
 		cur.execute(Query.delTag.format(passID, bagID))
+		con.commit()
 		cur.execute(Query.UpColl.format(passID, bagID))
+		con.commit()
 		resp['status'] = True
 
 	return jsonify(resp)
