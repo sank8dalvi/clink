@@ -1,5 +1,7 @@
 {% extends 'index.html' %}
 {% block body %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
 <style type="text/css">
     #addPass a  span {
         color: white;
@@ -17,6 +19,16 @@
     <div class="card-body">
         <h4>{{status}}</h4>
     </div>
+    <script type="text/javascript">
+
+
+ writeRfid(getCookie('passRfid'));
+
+
+
+</script>
+
 </div>
 </div>
+
 {% endblock %}

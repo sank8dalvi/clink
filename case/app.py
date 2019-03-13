@@ -58,8 +58,16 @@ def gen_uid():
 # write Rfid Page
 @app.route('/dept/gen/idwrite')
 def call_write_read():
-	return render_template('write-read.html', status="Please Scan Tag",
-						   bagCount=get_bag_count(), passCount=get_pass_count())
+	resp = flask.make_response(render_template('write-read.html', status = "Please Scan Tag",
+						   bagCount=get_bag_count(), passCount=get_pass_count()))
+
+	tempId = gen_uid().json
+	print(tempId)
+	resp.set_cookie("passDb",  tempId['passDb'])
+	resp.set_cookie("passRfid", tempId['passRfid'])
+
+
+	return resp
 
 
 # read Rfid Page	add delay should try to use JS and modify status directly
@@ -78,10 +86,10 @@ def gen_bag_id():
 	bagDb = str(uuid.uuid5(bagRfid, "caseLink").hex)
 	bagRfid = str(bagRfid.hex)
 	# render_template('.html', bagID = bagRfid, bagCount = getBagCount(), passCount = getPassCount)
-	return jsonify({'bagRfid': bagRfid, 'passDb': bagDb})
+	return jsonify({'bagRfid': bagRfid, 'bagDb': bagDb})
 
 
-'''@todo check how values are passing. API needs passenger and Bag db IDs'''
+''' todo check how values are passing. API needs passenger and Bag db IDs'''
 
 
 @app.route('/dept/post/bagwt', methods=["POST"])
@@ -89,14 +97,14 @@ def post_bag_wt():
 	wt = request.form['weight']
 	pdb = request.form['pdb']
 	bdb = request.form['bdb']
-
-	print(Query.addpassbags.format(pdb, bdb, int(wt)))
+	#print(Query.addpassbags.format(pdb, bdb, int(wt)))
 	cur.execute(Query.addpassbags.format(pdb, bdb, int(wt)))
 	con.commit()
-	return '1'
 
+	cur.execute(Query.getbags.format(pdb))
+	bags = cur.fetchall()
 
-# return render_template('.html', bagCount = getBagCount(), passCount = getPassCount)
+	return render_template('addBags.html', data=bags, bagCount=get_bag_count(), passCount=get_pass_count())
 
 
 ''''ARRIVAL'''
@@ -144,8 +152,9 @@ def pop_bag_tab():
 @app.route('/AddBags')  # Current passenger bags + on add bags page
 def pop_add_bag_tab():
 	# passID = request.args.get('passID','')				#piInput
-	cur.execute(Query.getbags.format("12324"))
+	cur.execute(Query.getbags.format(request.cookies.get('passDb')))
 	bags = cur.fetchall()
+	print(request.cookies.get('passDb'))
 	return render_template('addBags.html',
 						   data=bags,
 						   bagCount=get_bag_count(),
@@ -161,4 +170,4 @@ def con_close():
 	return "Closing"
 
 
-app.run()
+app.run(host='0.0.0.0')
