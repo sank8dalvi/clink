@@ -93,5 +93,5 @@ def start_scan():
 		time.sleep(5)
 
 
-app.run(host='192.168.0.17', port=4020)
+app.run(host='0.0.0.0')
 
