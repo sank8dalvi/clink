@@ -62,7 +62,7 @@ def call_write_read():
 						   bagCount=get_bag_count(), passCount=get_pass_count()))
 
 	tempId = gen_uid().json
-	resp.set_cookie("passDb" ,  tempId['passDb'])
+	resp.set_cookie("passDb",  tempId['passDb'])
 	resp.set_cookie("passRfid", tempId['passRfid'])
 
 	return resp
@@ -98,10 +98,11 @@ def post_bag_wt():
 	#print(Query.addpassbags.format(pdb, bdb, int(wt)))
 	cur.execute(Query.addpassbags.format(pdb, bdb, int(wt)))
 	con.commit()
-	return '1'
 
+	cur.execute(Query.getbags.format(pdb))
+	bags = cur.fetchall()
 
-# return render_template('.html', bagCount = getBagCount(), passCount = getPassCount)
+	return render_template('addBags.html', data=bags, bagCount=get_bag_count(), passCount=get_pass_count())
 
 
 ''''ARRIVAL'''
@@ -167,4 +168,4 @@ def con_close():
 	return "Closing"
 
 
-app.run()
+app.run(host='0.0.0.0')

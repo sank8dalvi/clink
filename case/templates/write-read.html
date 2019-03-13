@@ -1,5 +1,7 @@
 {% extends 'index.html' %}
 {% block body %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
 <style type="text/css">
     #addPass a  span {
         color: white;
@@ -8,7 +10,7 @@
         color: white;
     }
 </style>
-<div onload="get_communicate()" class="container">
+<div class="container">
 <div class="card mb-3">
     <div class="card-header">
         <i class="fas fa-table"></i>
@@ -17,7 +19,11 @@
     <div class="card-body">
         <h4>{{status}}</h4>
     </div>
+    <script type="text/javascript">
+writeRfid('sadasdasd');
+</script>
+
 </div>
 </div>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
 {% endblock %}
