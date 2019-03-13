@@ -5,9 +5,11 @@ import RPi.GPIO as GPIO
 import time
 import requests
 from pi_files import SimpleMFRC522
+from flask_cors import CORS
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
+CORS(app)
 
 op = [35, 37]
 

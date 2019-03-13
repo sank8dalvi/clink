@@ -167,7 +167,20 @@
 
   <!-- COMMS JS -->
   <script>
-    function communicate(method, url, data){
+    // for get only
+    function get_communicate(url){
+      $.ajax({
+        url: url,
+        type: "GET",
+        success: function (msg){
+          console.log(msg)
+        }
+      });
+
+    }
+
+    // for post only
+    function post_communicate(url, data){
       $.ajax({
       url: url,
         type: "POST",
@@ -175,8 +188,12 @@
           "accept": "application/json",
           "content-type": "application/x-www-form-urlencoded"
         },
-        data: data
+        data: data,
+        success: function (msg){
+          console.log(msg)
+        }
       });
+
     }
   </script>
 </body>
