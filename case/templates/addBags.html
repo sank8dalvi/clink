@@ -74,7 +74,7 @@ var writeRfid2 = function (id, bdb, wt) {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "http://192.168.0.17:4020/writeRfid",
+        "url": "http://192.168.1.36:5000/writeRfid",
         "method": "POST",
         "headers": {
             "cache-control": "no-cache",
@@ -99,7 +99,7 @@ var writeRfid2 = function (id, bdb, wt) {
         var settings = {
           "async": true,
           "crossDomain": true,
-          "url": "http://192.168.0.14:5000/dept/gen/bid",
+          "url": "/dept/gen/bid",
           "method": "GET",
           "headers": {
             "cache-control": "no-cache",
