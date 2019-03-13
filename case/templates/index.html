@@ -165,6 +165,20 @@
   <script src="{{url_for('static',filename='js/demo/datatables-demo.js')}}"></script>
   <script src="{{url_for('static',filename='js/demo/chart-area-demo.js')}}"></script>
 
+  <!-- COMMS JS -->
+  <script>
+    function communicate(method, url, data){
+      $.ajax({
+      url: url,
+        type: "POST",
+        headers: {
+          "accept": "application/json",
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        data: data
+      });
+    }
+  </script>
 </body>
 
 </html>
