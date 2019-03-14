@@ -162,7 +162,7 @@ def pop_add_bag_tab():
 	# passID = request.args.get('passID','')				#piInput
 	cur.execute(Query.getbags.format(request.cookies.get('passDb')))
 	bags = cur.fetchall()
-	print(request.cookies.get('passDb'))
+	print(bags)
 	return render_template('addBags.html',
 						   data=bags,
 						   bagCount=get_bag_count(),
