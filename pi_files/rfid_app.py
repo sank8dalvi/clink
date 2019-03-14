@@ -50,7 +50,6 @@ def write_rfid():
 			resp['id'] = id1
 
 			print(tag, temp)
-			time.sleep(2)
 			break
 		except Exception as e:
 			count += 1
