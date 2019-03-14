@@ -4,12 +4,13 @@ from case.model.dbconfig import clinkConnect
 from case.model.dbconfig import clinkClose
 import uuid
 from case.model.query import Query
+from flask_cors import CORS
 
 db = {
-	'user' : 'root',
-	'password' : '',
- 	'host' : '127.0.0.1',
-  	'database' : 'clink'
+	'user': 'root',
+	'password': '',
+	'host': '127.0.0.1',
+	'database': 'clink'
 }
 
 try:
@@ -19,110 +20,172 @@ try:
 except:
 	print("Not Connected")
 
-
 '''DASHBOARD Data'''
-def getPassCount():
-	cur.execute(Query.getPassCount)
-	return (cur.fetchall()[0][0])
 
-def getBagCount():
+
+def get_pass_count():
+	cur.execute(Query.getPassCount)
+	return cur.fetchall()[0][0]
+
+
+def get_bag_count():
 	cur.execute(Query.getBagCount)
-	return (cur.fetchall()[0][0])
+	return cur.fetchall()[0][0]
 
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
+CORS(app)
 
 
-@app.route('/')
-def homepage():
-	return render_template('home.html',bagCount = getBagCount(), passCount = getPassCount())
+# @app.route('/')
+# def homepage():
+# 	return render_template('home.html', bagCount=get_bag_count(), passCount=get_pass_count())
 
 
 ''''DEPARTURE'''
-@app.route('/dept/gen/pid' , methods =['GET'])
-def genUid():
+
+
+@app.route('/dept/gen/pid', methods=['GET'])
+def gen_uid():
 	uid = uuid.uuid1()
-	passRfid = uuid.uuid3(uid ,"caseLink")
-	passDb = str(uuid.uuid5(passRfid,"caseLink").hex)
+	passRfid = uuid.uuid3(uid, "caseLink")
+	passDb = str(uuid.uuid5(passRfid, "caseLink").hex)
 	passRfid = str(passRfid.hex)
-	return jsonify({'passRfid' : passRfid , 'passDb' : passDb})
+	return jsonify({'passRfid': passRfid, 'passDb': passDb})
 
-@app.route('/dept/gen/idwrite')						#write Rfid Page
-def callWriteRead():
-	return render_template('write-read.html', status = "Please Scan Tag",
-						   bagCount=getBagCount(), passCount=getPassCount())
 
-@app.route('/dept/gen/idread')							#read Rfid Page	add delay should try to use JS and modify status directly
-def pidWritten():
-	return render_template('write-read.html', status = "Tag Scanned Successfully",
-						   bagCount=getBagCount(),passCount=getPassCount())
+# write Rfid Page
+@app.route('/dept/gen/idwrite')
+def call_write_read():
+	resp = flask.make_response(render_template('write-read.html', status = "Please Scan Tag",
+						   bagCount=get_bag_count(), passCount=get_pass_count()))
 
-@app.route('/dept/gen/bid' , methods =['GET'])
-def genBagid():
+	tempId = gen_uid().json
+	print(tempId)
+	resp.set_cookie("passDb",  tempId['passDb'])
+	resp.set_cookie("passRfid", tempId['passRfid'])
+
+
+	return resp
+
+
+# read Rfid Page	add delay should try to use JS and modify status directly
+@app.route('/dept/gen/idread')
+def pid_written():
+	return render_template('write-read.html',
+						   status="Tag Scanned Successfully",
+						   bagCount=get_bag_count(),
+						   passCount=get_pass_count())
+
+
+@app.route('/dept/gen/bid', methods=['GET'])
+def gen_bag_id():
 	uid = uuid.uuid1()
 	bagRfid = uuid.uuid3(uid, "caseLink")
-	bagDb = str(uuid.uuid5(bagRfid,"caseLink").hex)
+	bagDb = str(uuid.uuid5(bagRfid, "caseLink").hex)
 	bagRfid = str(bagRfid.hex)
-	# render_template('.html', bagID = bagRfid, bagCount = getBagCount(), passCount = getPassCount)  		# passing bag rfid to html
-	return jsonify({'bagRfid' : bagRfid , 'passDb' : bagDb})
+	# render_template('.html', bagID = bagRfid, bagCount = getBagCount(), passCount = getPassCount)
+	return jsonify({'bagRfid': bagRfid, 'bagDb': bagDb})
 
-'''@todo check how values are passing. API needs passenger and Bag db IDs'''
-@app.route('/dept/post/bagwt', methods = ["POST"])
-def postBagWT():
-	wt = request.form['weight']									#HTML input name="weight"
-	#pdb = request.args.get('pdb','')							#piInput
-	#bdb = request.args.get('bdb','')							#piInput
-	#cur.execute(Query.addpassbags.format(pdb, bdb, wt))				#uploads passenger to databse
-	cur.execute(Query.addpassbags.format("23","32",int(wt)))
+
+''' todo check how values are passing. API needs passenger and Bag db IDs'''
+
+
+@app.route('/dept/post/bagwt', methods=["POST"])
+def post_bag_wt():
+	wt = request.form['weight']
+	pdb = request.form['pdb']
+	bdb = request.form['bdb']
+	#print(Query.addpassbags.format(pdb, bdb, int(wt)))
+	cur.execute(Query.addpassbags.format(pdb, bdb, int(wt)))
 	con.commit()
-	#return render_template('.html', bagCount = getBagCount(), passCount = getPassCount)
+
+	cur.execute(Query.getbags.format(pdb))
+	bags = cur.fetchall()
+
+	return render_template('addBags.html', data=bags, bagCount=get_bag_count(), passCount=get_pass_count())
+
+
+@app.route('/')
+def del_cookies():
+	resp = flask.make_response(render_template('home.html', bagCount=get_bag_count(), passCount=get_pass_count()))
+	resp.set_cookie("passDb", '', expires = 0)
+	resp.set_cookie("passRfid", '', expires = 0)
+	return resp
 
 
 ''''ARRIVAL'''
-@app.route('/arr/match', methods = ["POST"])
+
+
+@app.route('/arr/match', methods=["POST"])
 def match():
-	bagID = request.args.get('bagID','')						#piInput
-	passID = request.args.get('passID', '')					#piInput
+	# piInputs
+	bagID = request.form['bagID']
+	passID = request.form['passID']
+	print(bagID, passID)
 	bagID = str(uuid.uuid5(uuid.UUID(bagID), "caseLink").hex)
 	passID = str(uuid.uuid5(uuid.UUID(passID), "caseLink").hex)
-	cur.execute(Query.matchtag.format(passID,bagID))
-	con.commit()
+	print(bagID, passID)
+	cur.execute(Query.matchtag.format(passID, bagID))
+	data = cur.fetchall()
 	resp = {}
-	if cur.rowcount == 0 :
+	if len(data) == 0:
 		resp['status'] = False
 	else:
+		# todo row count
+		print(data)
 		cur.execute(Query.delTag.format(passID, bagID))
-		con.commit()
-		cur.execute(Query.UpColl.format(passID, bagID))
+		cur.execute(Query.UpColl.format(passID, bagID, data[0][3]))
 		con.commit()
 		resp['status'] = True
 
 	return jsonify(resp)
 
 
-
 ''''Table'''
-@app.route('/popBagTable')										#All bags from db
-def popBagTab():
-	passID = request.args.get('passID', '')					#piInput
+
+
+@app.route('/popBagTable')  # All bags from db
+def pop_bag_tab():
+	passID = request.args.get('passID', '')  # piInput
 	cur.execute(Query.gettable.format(passID))
 	data = cur.fetchall()
-	return render_template('tags.html', data = data,
-					bagCount = getBagCount(), passCount = getPassCount())			#add bag details html
+	return render_template('tags.html',
+						   data=data,
+						   bagCount=get_bag_count(),
+						   passCount=get_pass_count())  # add bag details html
 
-@app.route('/AddBags')										#Current passenger bags + on add bags page
-def popAddBagTab():
-	#passID = request.args.get('passID','')				#piInput
-	cur.execute(Query.getbags.format("12324"))
+
+@app.route('/AddBags')  # Current passenger bags + on add bags page
+def pop_add_bag_tab():
+	# passID = request.args.get('passID','')				#piInput
+	cur.execute(Query.getbags.format(request.cookies.get('passDb')))
 	bags = cur.fetchall()
-	return render_template('addBags.html', data = bags,
-					bagCount = getBagCount(), passCount = getPassCount())			#add passenger details html
+	print(bags)
+	return render_template('addBags.html',
+						   data=bags,
+						   bagCount=get_bag_count(),
+						   passCount=get_pass_count())  # add passenger details html
 
+
+@app.route('/collected')
+def collected_bags():
+	print("Collected")
+	con.commit()
+	cur.execute(Query.collectedBags)
+	data = cur.fetchall()
+	print(data)
+	return render_template('collected.html', data = data , bagCount=get_bag_count(),
+						   passCount=get_pass_count())
 
 ''''CLOSE CONN'''
+
+
 @app.route('/close')
-def conClose():
+def con_close():
 	clinkClose(con)
-	return("Closing")
-app.run()
+	return "Closing"
+
+
+app.run(host='0.0.0.0')
