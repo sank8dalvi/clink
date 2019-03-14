@@ -101,15 +101,15 @@ var match = function(passRfid, bagRfid){
       else
         document.getElementById('exitstatus').innerHTML = 'Kindly check your tag';
 
-	   var load = 0;
-	   var id = setInterval(frame,60);
-	   function frame(){
-		if(loading == 40){
-			clearInterval(id);
-			window.open("/arr/extract","_self");
-		}else{
-			loading = loading +1 ;
-		}
+	   var loading = 0;
+         var id = setInterval(frame,60);
+         function frame(){
+          if(loading == 40){
+              clearInterval(id);
+              window.open("/arr/extract","_self");
+          }else{
+              loading = loading +1 ;
+          }
 	}
 	});
 }
