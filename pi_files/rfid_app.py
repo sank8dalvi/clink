@@ -41,6 +41,7 @@ def write_rfid():
 		print('waiting to write')
 		try:
 			id1, temp = reader.write(tag)
+			print(tag, temp)
 			print('confirm')
 			id2, data = reader.read()
 			if data.strip() == tag and id1 == id2:
