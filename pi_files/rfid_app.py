@@ -79,6 +79,33 @@ def printLCD(text):
         GPIO.cleanup()
 
 
+@app.route('/readRfid')
+def read_rfid():
+	reader = SimpleMFRC522.SimpleMFRC522()
+	resp = {'success': -1}
+	count = 0
+	while True:
+		if count == 5:
+			break
+
+		print('waiting to write')
+		try:
+			id1, temp = reader.read()
+			print('confirm')
+			id2, data = reader.read()
+			if id1 == id2:
+				resp['success'] = 0
+				resp['id'] = data
+				break
+			else:
+				print('failed')
+		except:
+			count += 1
+	GPIO.cleanup()
+
+	return jsonify(resp)
+
+
 @app.route('/startScan')
 def start_scan():
 	"""
@@ -87,37 +114,78 @@ def start_scan():
 	calls /match on server to compare bag and passenger id
 	and prints result on lcd
 	"""
-        GPIO.cleanup()
+
+	server = 'http://192.168.1.35:5000/'
+
 	while True:
-		# lcd out scan boarding pass
-		print("Scan pass")
-		printLCD("Scan pass")
-		reader = SimpleMFRC522.SimpleMFRC522()
-		id1, pass_id = reader.read()
-		
-		print("Read pass", pass_id)
+		# print scan pass
+		try:
+			requests.post(server + 'arr/extract', data={'title': "Scan CaseLink Card", 'code': 0})
+			reader = SimpleMFRC522.SimpleMFRC522()
+			id1, pass_id = reader.read()
+			print("Read pass", pass_id)
 
-		time.sleep(2)
-		# lcd out scan bag
-		printLCD("Scan bag")
-		print("Scan bag")
-		reader = SimpleMFRC522.SimpleMFRC522()
-		id2, bag_id = reader.read()
-		print("Read bag", bag_id)
+			requests.post(server + 'arr/extract', data={'title': "Scan CaseLink Tag", 'code': 1})
+			time.sleep(1.5)
+			# lcd out scan bag
+			printLCD("Scan bag")
+			print("Scan bag")
+			reader = SimpleMFRC522.SimpleMFRC522()
+			id2, bag_id = reader.read()
+			print("Read bag", bag_id)
 
-		data = {'bagID': bag_id.strip(), 'passID': pass_id.strip()}
-		print(data)
-		resp = requests.post('http://192.168.1.35:5000/arr/match', data=data)
-		# print(resp.text)
-		status = resp.json()
-		print(status)
-		if status['status']:
-			# lcd out 'you may pass'
-			printLCD('you may pass')
-		else:
-			# gandalf screams "YOU SHALL NOT PASS"
-			printLCD("YOU SHALL\nNOT PASS")
-		time.sleep(5)
+			data = {'bagID': bag_id.strip(), 'passID': pass_id.strip()}
+			print(data)
+			resp = requests.post(server + 'arr/match', data=data)
+
+			status = resp.json()
+			print(status)
+			if status['status']:
+				# lcd out 'you may pass'
+				printLCD('you may pass')
+			else:
+				# gandalf screams "YOU SHALL NOT PASS"
+				printLCD("YOU SHALL\nNOT PASS")
+			time.sleep(3)
+		except:
+			print("error occurred")
+			pass
+
+
+
+
+# GPIO.cleanup()
+	# while True:
+	# 	# lcd out scan boarding pass
+	# 	print("Scan pass")
+	# 	printLCD("Scan pass")
+	# 	reader = SimpleMFRC522.SimpleMFRC522()
+	# 	id1, pass_id = reader.read()
+	#
+	# 	print("Read pass", pass_id)
+	#
+	# 	time.sleep(2)
+	# 	# lcd out scan bag
+	# 	printLCD("Scan bag")
+	# 	print("Scan bag")
+	# 	reader = SimpleMFRC522.SimpleMFRC522()
+	# 	id2, bag_id = reader.read()
+	# 	print("Read bag", bag_id)
+	#
+	# 	data = {'bagID': bag_id.strip(), 'passID': pass_id.strip()}
+	# 	print(data)
+	# 	resp = requests.post('http://192.168.1.35:5000/arr/match', data=data)
+	# 	# print(resp.text)
+	# 	status = resp.json()
+	# 	print(status)
+	# 	if status['status']:
+	# 		# lcd out 'you may pass'
+	# 		printLCD('you may pass')
+	# 	else:
+	# 		# gandalf screams "YOU SHALL NOT PASS"
+	# 		printLCD("YOU SHALL\nNOT PASS")
+	# 	time.sleep(5)
+
 
 
 app.run(host='0.0.0.0')
