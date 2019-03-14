@@ -340,8 +340,10 @@ class MFRC522:
         # Check if an error occurred
         if not (status == self.MI_OK):
             self.logger.error("AUTH ERROR!!")
+            raise Exception
         if not (self.Read_MFRC522(self.Status2Reg) & 0x08) != 0:
             self.logger.error("AUTH ERROR(status2reg & 0x08) != 0")
+            raise Exception
 
         # Return the status
         return status
@@ -359,6 +361,7 @@ class MFRC522:
         (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, recvData)
         if not (status == self.MI_OK):
             self.logger.error("Error while reading!")
+            raise Exception
 
         if len(backData) == 16:
             self.logger.debug("Sector " + str(blockAddr) + " " + str(backData))
@@ -389,6 +392,7 @@ class MFRC522:
             (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, buf)
             if not (status == self.MI_OK) or not (backLen == 4) or not ((backData[0] & 0x0F) == 0x0A):
                 self.logger.error("Error while writing")
+                raise Exception
             if status == self.MI_OK:
                 self.logger.debug("Data written")
 
@@ -401,6 +405,7 @@ class MFRC522:
                 self.MFRC522_Read(i)
             else:
                 self.logger.error("Authentication error")
+                raise Exception
 
     def MFRC522_Init(self):
         self.MFRC522_Reset()
