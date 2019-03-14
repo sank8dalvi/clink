@@ -28,48 +28,7 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
 <script>
-var writeRfid = function (id) {
-    var form = new FormData();
-    form.append("id", id); //cookie
 
-    var settings = {
-        "async": true,
-        "crossDomain": true,
-        "url": "http://192.168.1.36:5000/writeRfid",
-        "method": "POST",
-        "headers": {
-            "cache-control": "no-cache",
-            "Postman-Token": "b06b5cdb-ae1a-43f5-abe3-85e9efee0981"
-        },
-        "processData": false,
-        "contentType": false,
-        "mimeType": "multipart/form-data",
-        "data": form
-    }
-
-    $.ajax(settings).done(function(response) {
-        console.log(response);
-        <!--window.open('/dept/gen/idread', '_self');-->
-                window.open('/AddBags', '_self');
-
-    });
-}
-
-var getCookie = function (cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
 
 var match = function(passRfid, bagRfid){
 	var form = new FormData();

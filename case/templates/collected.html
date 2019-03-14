@@ -26,32 +26,6 @@
 
 <body id="page-top">
 <script>
-var writeRfid = function (id) {
-    var form = new FormData();
-    form.append("id", id); //cookie
-
-    var settings = {
-        "async": true,
-        "crossDomain": true,
-        "url": "http://192.168.1.36:5000/writeRfid",
-        "method": "POST",
-        "headers": {
-            "cache-control": "no-cache",
-            "Postman-Token": "b06b5cdb-ae1a-43f5-abe3-85e9efee0981"
-        },
-        "processData": false,
-        "contentType": false,
-        "mimeType": "multipart/form-data",
-        "data": form
-    }
-
-    $.ajax(settings).done(function(response) {
-        console.log(response);
-        <!--window.open('/dept/gen/idread', '_self');-->
-                window.open('/AddBags', '_self');
-
-    });
-}
 
 var getCookie = function (cname) {
   var name = cname + "=";
