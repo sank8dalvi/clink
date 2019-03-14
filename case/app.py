@@ -107,6 +107,15 @@ def post_bag_wt():
 	return render_template('addBags.html', data=bags, bagCount=get_bag_count(), passCount=get_pass_count())
 
 
+@app.route('/del-cookies')
+def del_cookies():
+	print("del")
+	resp = flask.make_response(render_template('home.html', bagCount=get_bag_count(), passCount=get_pass_count()))
+	resp.set_cookie("passDb", '', expires = 0)
+	resp.set_cookie("passRfid", '', expires = 0)
+	return resp
+
+
 ''''ARRIVAL'''
 
 
