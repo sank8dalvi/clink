@@ -1,7 +1,104 @@
-{% extends 'index.html' %}
-{% block body %}
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container">
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Caselink</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="{{url_for('static', filename='vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
+
+  <!-- Page level plugin CSS-->
+  <link href="{{url_for('static',filename='vendor/datatables/dataTables.bootstrap4.css')}}" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css')}}">
+
+  <!-- Custom styles for this template-->
+  <link href="{{url_for('static', filename='css/sb-admin.css')}}" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+<script>
+var writeRfid = function (id) {
+    var form = new FormData();
+    form.append("id", id); //cookie
+
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "http://192.168.1.36:5000/writeRfid",
+        "method": "POST",
+        "headers": {
+            "cache-control": "no-cache",
+            "Postman-Token": "b06b5cdb-ae1a-43f5-abe3-85e9efee0981"
+        },
+        "processData": false,
+        "contentType": false,
+        "mimeType": "multipart/form-data",
+        "data": form
+    }
+
+    $.ajax(settings).done(function(response) {
+        console.log(response);
+        <!--window.open('/dept/gen/idread', '_self');-->
+                window.open('/AddBags', '_self');
+
+    });
+}
+
+var getCookie = function (cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+</script>
+
+  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+
+    <a class="navbar-brand mr-1" href="/arr/extract"><img src="/static/image/cllogo.png" height="50px"> CaseLink</a>
+
+  </nav>
+
+  <div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="sidebar navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Arrival Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item" >
+        <a class="nav-link" href="/collected">
+          <i class="fa fa-fw fa-suitcase" aria-hidden="true"></i>
+          <span>Collected Bags</span></a>
+      </li>
+    </ul>
+<style>
+  #card{
+    margin-left : 13%;
+  }
+</style>
+
+<div class="container mt-5">
 <div class="card mb-3">
     <div class="card-header">
         <i class="fas fa-table"></i>
@@ -33,4 +130,42 @@
 </div>
 </div>
 
-{% endblock %}
+<!-- Sticky Footer -->
+      <footer class="sticky-footer">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>@CaseLink 2019</span>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+    <!-- /.content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+  <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{{url_for('static',filename='vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+
+  <!-- Page level plugin JavaScript-->
+  <script src="{{url_for('static',filename='vendor/datatables/jquery.dataTables.js')}}"></script>
+  <script src="{{url_for('static',filename='vendor/datatables/dataTables.bootstrap4.js')}}"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="{{url_for('static',filename='js/sb-admin.min.js')}}"></script>
+
+
+</body>
+
+</html>

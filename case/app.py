@@ -142,6 +142,10 @@ def match():
 
 	return jsonify(resp)
 
+@app.route('/arr/extract')
+def openarrival():
+	return render_template('arrivaleject.html')
+
 
 ''''Table'''
 
@@ -178,6 +182,8 @@ def collected_bags():
 	print(data)
 	return render_template('collected.html', data = data , bagCount=get_bag_count(),
 						   passCount=get_pass_count())
+
+
 
 ''''CLOSE CONN'''
 
