@@ -95,7 +95,7 @@ def read_rfid():
 			id2, data = reader.read()
 			if id1 == id2:
 				resp['success'] = 0
-				resp['id'] = data
+				resp['id'] = data.strip()
 				break
 			else:
 				print('failed')

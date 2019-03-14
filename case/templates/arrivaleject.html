@@ -25,6 +25,8 @@
 </head>
 
 <body id="page-top">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
 <script>
 var writeRfid = function (id) {
     var form = new FormData();
@@ -68,6 +70,83 @@ var getCookie = function (cname) {
   }
   return "";
 }
+
+var match = function(passRfid, bagRfid){
+	var form = new FormData();
+	form.append("bagID", bagRfid);
+	form.append("passID", passRfid);
+
+	var settings = {
+	  "async": true,
+	  "crossDomain": true,
+	  "url": "/arr/match",
+	  "method": "POST",
+	  "headers": {
+	    "cache-control": "no-cache",
+	    "Postman-Token": "765b0c8a-16c5-4514-b1bd-2cd8557f164b"
+	  },
+	  "processData": false,
+	  "contentType": false,
+	  "mimeType": "multipart/form-data",
+	  "data": form
+	}
+
+	$.ajax(settings).done(function (response) {
+	  console.log(response);
+	  var data = JSON.parse(response)
+	  if(data.status)
+	    document.getElementById('exitstatus').innerHTML = 'You may pass';
+	                    //window.open('/arr/extract', '_self');
+
+      else
+        document.getElementById('exitstatus').innerHTML = 'Kindly check your tag';
+	});
+}
+
+
+var scanBag = function(passRfid){
+	var settings = {
+	  "async": true,
+	  "crossDomain": true,
+	  "url": "http://192.168.137.207:5000/readRfid",
+	  "method": "GET",
+	  "headers": {
+	    "cache-control": "no-cache",
+	    "Postman-Token": "199cbcb5-ada7-4fee-895f-30aa5d8b3cad"
+	  }
+	}
+
+	$.ajax(settings).done(function (response) {
+	  console.log('bag :' + response.id);
+
+      match(passRfid, response.id)
+	});
+
+}
+
+
+var scanPass = function(){
+
+	// read
+	var settings = {
+	  "async": true,
+	  "crossDomain": true,
+	  "url": "http://192.168.137.207:5000/readRfid",
+	  "method": "GET",
+	  "headers": {
+	    "cache-control": "no-cache",
+	    "Postman-Token": "199cbcb5-ada7-4fee-895f-30aa5d8b3cad"
+	  }
+	}
+
+	$.ajax(settings).done(function (response) {
+	  console.log('pass :'+ response.id);
+
+	  document.getElementById('exitstatus').innerHTML = 'Scan CaseLink Tag';
+	  scanBag(response.id);
+	});
+}
+
 </script>
 
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
@@ -112,7 +191,10 @@ var getCookie = function (cname) {
                   Arrival Safety Check
               </div>
               <div class="card-body">
-                  <p id="exitstatus"></p>
+                  <p id="exitstatus">Scan CaseLink Card</p>
+                <script>
+                  scanPass();
+                </script>
               </div>
               <div class="card-footer small text-muted">@caselink</div>
           </div>
