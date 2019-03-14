@@ -52,6 +52,7 @@ def write_rfid():
 		print('waiting to write')
 		try:
 			id1, temp = reader.write(tag)
+			print(tag, temp)
 			print('confirm')
 			id2, data = reader.read()
 			if data.strip() == tag and id1 == id2:
@@ -66,6 +67,24 @@ def write_rfid():
 	GPIO.cleanup()
 	
 	return jsonify(resp)
+
+
+@app.route('/readRfid')
+def read_rfid():
+	reader = SimpleMFRC522.SimpleMFRC522()
+	resp = {'success': -1}
+	count = 0
+	time.sleep(2)
+
+	print('waiting to read')
+	id1, temp = reader.read()
+	print(id1, temp)
+	resp['success'] = 0
+	resp['id'] = temp.strip()
+	GPIO.cleanup()
+
+	return jsonify(resp)
+
 
 
 def printLCD(text):

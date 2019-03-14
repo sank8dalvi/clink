@@ -8,8 +8,10 @@ reader = SimpleMFRC522.SimpleMFRC522()
 try:
         text = raw_input('New data:')
         print("Now place your tag to write")
-        reader.write(text)
+        id, t = reader.write(text)
         print("Written")
+	print(id)
+	print(t)
 finally:
         GPIO.cleanup()
 
