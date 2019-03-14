@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+{% block body %}
+
+<div class="container">
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fas fa-table"></i>
+            Added Bags
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-center">
+                <thead class="thead-dark">
+                    <tr>
+                    <th class="text-center" scope="col">Passenger ID</th>
+                    <th class="text-center" scope="col">Bag ID</th>
+                    <th class="text-center" scope="col">Bag Weight</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in data %}
+                    <tr>
+                        <td class="text-center" >{{item[0]}}</td>
+                        <td class="text-center" >{{item[1]}}</td>
+                        <td class="text-center" >{{item[2]}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer small text-muted">@caselink</div>
+</div>
+</div>
+
+{% endblock %}

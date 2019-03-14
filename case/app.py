@@ -38,9 +38,9 @@ app.config["DEBUG"] = True
 CORS(app)
 
 
-@app.route('/')
-def homepage():
-	return render_template('home.html', bagCount=get_bag_count(), passCount=get_pass_count())
+# @app.route('/')
+# def homepage():
+# 	return render_template('home.html', bagCount=get_bag_count(), passCount=get_pass_count())
 
 
 ''''DEPARTURE'''
@@ -107,9 +107,8 @@ def post_bag_wt():
 	return render_template('addBags.html', data=bags, bagCount=get_bag_count(), passCount=get_pass_count())
 
 
-@app.route('/del-cookies')
+@app.route('/')
 def del_cookies():
-	print("del")
 	resp = flask.make_response(render_template('home.html', bagCount=get_bag_count(), passCount=get_pass_count()))
 	resp.set_cookie("passDb", '', expires = 0)
 	resp.set_cookie("passRfid", '', expires = 0)
@@ -169,6 +168,16 @@ def pop_add_bag_tab():
 						   bagCount=get_bag_count(),
 						   passCount=get_pass_count())  # add passenger details html
 
+
+@app.route('/collected')
+def collected_bags():
+	print("Collected")
+	con.commit()
+	cur.execute(Query.collectedBags)
+	data = cur.fetchall()
+	print(data)
+	return render_template('collected.html', data = data , bagCount=get_bag_count(),
+						   passCount=get_pass_count())
 
 ''''CLOSE CONN'''
 

@@ -7,3 +7,4 @@ class Query:
 	getbags = "SELECT `bagID`,`bagWT` FROM `tagdata` WHERE `passID` = '{}'"
 	getPassCount = "SELECT COUNT(DISTINCT `passID`) FROM `tagdata`"
 	getBagCount = "SELECT COUNT(`bagID`) FROM `tagdata`"
+	collectedBags = "SELECT `passID`, `bagID`, `bagWT` FROM `collected`"
