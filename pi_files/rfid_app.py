@@ -69,6 +69,24 @@ def write_rfid():
 	return jsonify(resp)
 
 
+@app.route('/readRfid')
+def read_rfid():
+	reader = SimpleMFRC522.SimpleMFRC522()
+	resp = {'success': -1}
+	count = 0
+	time.sleep(2)
+
+	print('waiting to read')
+	id1, temp = reader.read()
+	print(id1, temp)
+	resp['success'] = 0
+	resp['id'] = temp.strip()
+	GPIO.cleanup()
+
+	return jsonify(resp)
+
+
+
 def printLCD(text):
         GPIO.cleanup()
         GPIO.setmode(GPIO.BCM)
