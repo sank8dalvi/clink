@@ -58,7 +58,7 @@ def gen_uid():
 # write Rfid Page
 @app.route('/dept/gen/idwrite')
 def call_write_read():
-	resp = flask.make_response(render_template('write-read.html', status = "Please Scan Tag",
+	resp = flask.make_response(render_template('write-read.html', status = "Please Scan Caselink Card",
 						   bagCount=get_bag_count(), passCount=get_pass_count()))
 
 	tempId = gen_uid().json

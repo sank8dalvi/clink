@@ -70,7 +70,7 @@ function post(path, params, method) {
 var writeRfid2 = function (id, bdb, wt) {
     var form = new FormData();
     form.append("id", id); //cookie
-    document.getElementById('status').innerHTML = 'Scan Rfid now';
+    document.getElementById('status').innerHTML = '<div style="width:400px;height:50px;position:fixed;bottom:80px;right:370px" class="alert alert-warning alert-dismissible fade show" role="alert">Scan Caselink Tag<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
     var settings = {
         "async": true,
         "crossDomain": true,
@@ -119,13 +119,12 @@ var writeRfid2 = function (id, bdb, wt) {
   <input style="height:50px" type="text" class="form-control" name="weight" id='weight_bag' placeholder="Enter the weight of the Bag" aria-label="Bag Weight" aria-describedby="basic-addon2">
   <div class="input-group-append">
     <button class="btn btn-primary btn-lg" type="submit" onclick="javascript: gen_bagid(document.getElementById('weight_bag').value)">Add Bag</button>
-       <p id="status"></p>
   </div>
 </div>
 <!--</form>-->
 <form action="/" >
         <button style="float:center;position:absolute;right:85px;height:50px" type="submit" class="btn m-3 btn-success btn-lg">Submit</button>
-
 </form>
+<div id="status"></div>
 
 {% endblock %}

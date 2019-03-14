@@ -54,11 +54,11 @@ var match = function(passRfid, bagRfid){
 	  console.log(response);
 	  var data = JSON.parse(response)
 	  if(data.status)
-	    document.getElementById('exitstatus').innerHTML = 'You may pass';
+	    document.getElementById('exitstatus').innerHTML = 'document.getElementById('exitstatus').innerHTML = '<div class="alert alert-success" role="alert">You may Pass</div>';';
 	                    //window.open('/arr/extract', '_self');
 
       else
-        document.getElementById('exitstatus').innerHTML = 'Kindly check your tag';
+        document.getElementById('exitstatus').innerHTML = '<div class="alert alert-danger" role="alert">Kindly check your tag</div>';
 
 	   var loading = 0;
          var id = setInterval(frame,60);
@@ -112,7 +112,7 @@ var scanPass = function(){
 	$.ajax(settings).done(function (response) {
 	  console.log('pass :'+ response.id);
 
-	  document.getElementById('exitstatus').innerHTML = 'Scan CaseLink Tag';
+	  document.getElementById('exitstatus').innerHTML = '<div class="alert alert-primary" role="alert">Scan Caselink Tag</div>';
 	  scanBag(response.id);
 	});
 }
@@ -161,7 +161,9 @@ var scanPass = function(){
                   Arrival Safety Check
               </div>
               <div class="card-body">
-                  <p id="exitstatus">Scan CaseLink Card</p>
+                  <div class="alert alert-secondary" role="alert">
+                    Scan Caselink Card
+                  </div>
                 <script>
                   scanPass();
                 </script>
