@@ -58,7 +58,7 @@ wsem = asyncio.Semaphore(1)
 rsem = asyncio.Semaphore(1)
 
 @app.route('/writeRfid', methods=['POST'])
-def write_rfid():
+async def write_rfid():
 	"""
 	Called by web to write on the rfid card
 
@@ -88,7 +88,7 @@ def write_rfid():
 
 
 @app.route('/readRfid')
-def read_rfid():
+async def read_rfid():
 	async with rsem:
 		resp = {'success': -1}
 		count = 0
