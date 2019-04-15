@@ -25,6 +25,9 @@ lcd_rows = 2
 
 reader = SimpleMFRC522.SimpleMFRC522()
 
+
+sem = [1,1]
+
 @app.route('/writeRfid', methods=['POST'])
 def write_rfid():
 	"""
@@ -45,6 +48,7 @@ def write_rfid():
 
 		print('waiting to write')
 		try:
+			semWaitwrite()
 			id1, temp = reader.write(tag)
 			resp['success'] = 0
 			resp['id'] = id1
@@ -53,7 +57,7 @@ def write_rfid():
 			break
 		except Exception as e:
 			count += 1
-	
+	semSignalwrite()
 	return jsonify(resp)
 
 
@@ -67,6 +71,7 @@ def read_rfid():
 	while count < 5:
 		try:
 			print('Waiting to read')
+			semWaitread()
 			id1, temp = reader.read()
 			print(id1, temp)
 			resp['success'] = 0
@@ -74,9 +79,34 @@ def read_rfid():
 			break
 		except Exception as e:
 			count += 1
-
+	semSignalread()
 	return jsonify(resp)
 
 
 app.run(host='0.0.0.0')
+
+def semWaitwrite():
+	if sem[0] == 1:
+		return
+	elif sem[0] == 0:
+		semWaitwrite()
+
+def semSignalwrite():
+	if sem[0] == 0:
+		sem[0] = 1
+	return
+
+def semWaitread():
+	if sem[1] == 1:
+		return
+	elif sem[1] == 0:
+		semWaitwrite()
+
+def semSignalread():
+	if sem[1] == 0:
+		sem[1] = 1
+	return
+
+
+
 
