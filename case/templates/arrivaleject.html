@@ -53,10 +53,11 @@ var match = function(passRfid, bagRfid){
 	$.ajax(settings).done(function (response) {
 	  console.log(response);
 	  var data = JSON.parse(response)
-	  if(data.status)
+	  if(data.status){
 	    document.getElementById('exitstatus').innerHTML = '<div class="alert alert-success" role="alert">You may Pass</div>';
 	                    //window.open('/arr/extract', '_self');
-
+	    window.open('http://localhost:5000/','_self');
+      }
       else
         document.getElementById('exitstatus').innerHTML = '<div class="alert alert-danger" role="alert">Kindly check your tag</div>';
 

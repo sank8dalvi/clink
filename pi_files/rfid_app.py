@@ -5,6 +5,7 @@ import RPi.GPIO as GPIO
 import time
 import SimpleMFRC522
 from flask_cors import CORS
+import asyncio
 
 
 app = flask.Flask(__name__)
@@ -25,7 +26,7 @@ lcd_rows = 2
 
 reader = SimpleMFRC522.SimpleMFRC522()
 
-
+'''
 sem = [1,1]
 
 
@@ -51,6 +52,10 @@ def semSignalread():
 		sem[1] = 1
 	return
 
+'''
+
+wsem = asyncio.Semaphore(1)
+rsem = asyncio.Semaphore(1)
 
 @app.route('/writeRfid', methods=['POST'])
 def write_rfid():
@@ -61,49 +66,44 @@ def write_rfid():
 	success : 	-1 if failed to write, 0 if succeeded to write
 	id : id of the rfid card if write succeeds
 	"""
+	async with wsem:
+		tag = request.form['id']  # tag to be written
+		resp = {'success': -1}
+		count = 0
+		while count < 5:
+			if count == 5:
+				break
+			print('waiting to write')
+			try:
+				id1, temp = reader.write(tag)
+				resp['success'] = 0
+				resp['id'] = id1
 
-	tag = request.form['id']  # tag to be written
-	resp = {'success': -1}
-	count = 0
+				print(tag, temp)
+				break
+			except Exception as e:
+				count += 1
 
-	while count < 5:
-		if count == 5:
-			break
-
-		print('waiting to write')
-		try:
-			semWaitwrite()
-			id1, temp = reader.write(tag)
-			resp['success'] = 0
-			resp['id'] = id1
-
-			print(tag, temp)
-			break
-		except Exception as e:
-			count += 1
-	semSignalwrite()
 	return jsonify(resp)
 
 
 @app.route('/readRfid')
 def read_rfid():
+	async with rsem:
+		resp = {'success': -1}
+		count = 0
+		time.sleep(2)
+		while count < 5:
+			try:
+				print('Waiting to read')
+				id1, temp = reader.read()
+				print(id1, temp)
+				resp['success'] = 0
+				resp['id'] = temp.strip()
+				break
+			except Exception as e:
+				count += 1
 
-	resp = {'success': -1}
-	count = 0
-	time.sleep(2)
-
-	while count < 5:
-		try:
-			print('Waiting to read')
-			semWaitread()
-			id1, temp = reader.read()
-			print(id1, temp)
-			resp['success'] = 0
-			resp['id'] = temp.strip()
-			break
-		except Exception as e:
-			count += 1
-	semSignalread()
 	return jsonify(resp)
 
 

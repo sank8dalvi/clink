@@ -20,6 +20,37 @@ try:
 except:
 	print("Not Connected")
 
+
+'''SEMAPHORE
+
+
+
+def semWaitwrite():
+	if sem[0] == 1:
+		sem[0] = 0
+		return
+	elif sem[0] == 0:
+		semWaitwrite()
+
+def semSignalwrite():
+	if sem[0] == 0:
+		sem[0] = 1
+	return
+
+def semWaitread():
+	if sem[1] == 1:
+		sem[1] = 0
+		return
+	elif sem[1] == 0:
+		semWaitread()
+
+def semSignalread():
+	if sem[1] == 0:
+		sem[1] = 1
+	return
+
+'''
+
 '''DASHBOARD Data'''
 
 
@@ -58,15 +89,14 @@ def gen_uid():
 # write Rfid Page
 @app.route('/dept/gen/idwrite')
 def call_write_read():
+												#semWaitwrite()
 	resp = flask.make_response(render_template('write-read.html', status = "Please Scan Caselink Card",
 						   bagCount=get_bag_count(), passCount=get_pass_count()))
-
 	tempId = gen_uid().json
 	print(tempId)
 	resp.set_cookie("passDb",  tempId['passDb'])
 	resp.set_cookie("passRfid", tempId['passRfid'])
-
-
+												#semSignalwrite()
 	return resp
 
 
