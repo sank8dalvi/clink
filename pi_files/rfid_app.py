@@ -64,7 +64,7 @@ def read_rfid():
 	count = 0
 	time.sleep(2)
 
-	while count < 5:
+	while count <5: 
 		try:
 			print('Waiting to read')
 			id1, temp = reader.read()
