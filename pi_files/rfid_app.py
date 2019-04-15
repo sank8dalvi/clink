@@ -28,6 +28,30 @@ reader = SimpleMFRC522.SimpleMFRC522()
 
 sem = [1,1]
 
+
+def semWaitwrite():
+	if sem[0] == 1:
+		return
+	elif sem[0] == 0:
+		semWaitwrite()
+
+def semSignalwrite():
+	if sem[0] == 0:
+		sem[0] = 1
+	return
+
+def semWaitread():
+	if sem[1] == 1:
+		return
+	elif sem[1] == 0:
+		semWaitwrite()
+
+def semSignalread():
+	if sem[1] == 0:
+		sem[1] = 1
+	return
+
+
 @app.route('/writeRfid', methods=['POST'])
 def write_rfid():
 	"""
@@ -84,28 +108,6 @@ def read_rfid():
 
 
 app.run(host='0.0.0.0')
-
-def semWaitwrite():
-	if sem[0] == 1:
-		return
-	elif sem[0] == 0:
-		semWaitwrite()
-
-def semSignalwrite():
-	if sem[0] == 0:
-		sem[0] = 1
-	return
-
-def semWaitread():
-	if sem[1] == 1:
-		return
-	elif sem[1] == 0:
-		semWaitwrite()
-
-def semSignalread():
-	if sem[1] == 0:
-		sem[1] = 1
-	return
 
 
 
